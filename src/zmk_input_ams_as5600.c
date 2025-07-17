@@ -66,7 +66,7 @@ static int zmk_input_ams_as5600_process(const struct device *dev) {
     status = read_buffer[0];
 
     if (GET_BIT(status, ZMK_INPUT_AMS_AS5600_STATUS_REGISTER_AGC_OVERFLOW_BIT)) {
-        LOG_ERR(ZMK_INPUT_AMS_AS5600_LOG_PREFIX "AGC overflow – magnet too weak");
+        LOG_ERR(ZMK_INPUT_AMS_AS5600_LOG_PREFIX "AGC overflow – magnet too weak 2");
         // return -1;
     }
     if (GET_BIT(status, ZMK_INPUT_AMS_AS5600_STATUS_REGISTER_AGC_UNDERFLOW_BIT)) {
