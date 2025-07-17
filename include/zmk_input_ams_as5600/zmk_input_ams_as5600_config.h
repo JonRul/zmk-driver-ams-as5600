@@ -105,3 +105,5 @@ const uint8_t ZMK_INPUT_AMS_AS5600_CONFIG[2] = {
 #endif
     )
 };
+
+#endif /* ZMK_INPUT_AMS_AS5600_CONFIG_H */
