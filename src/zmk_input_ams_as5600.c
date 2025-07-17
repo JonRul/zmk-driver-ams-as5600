@@ -7,7 +7,7 @@
 
 #include "zmk_input_ams_as5600/zmk_input_ams_as5600_config.h"
 
-LOG_MODULE_REGISTER(zmk_input_ams_as5600, CONFIG_INPUT_LOG_LEVEL);
+LOG_MODULE_REGISTER(zmk_input_ams_as5600, CONFIG_ZMK_INPUT_AMS_AS5600_LOG_LEVEL);
 
 #define ZMK_INPUT_AMS_AS5600_CONF_REGISTER 0x07
 #define ZMK_INPUT_AMS_AS5600_STATUS_REGISTER 0x0B
@@ -186,3 +186,43 @@ static int zmk_input_ams_as5600_initialize(const struct device *dev) {
                           NULL);
 
 DT_INST_FOREACH_STATUS_OKAY(ZMK_INPUT_AMS_AS5600_INIT)
+
+
+
+static void as5600_retry_work_handler(struct k_work *work);
+K_WORK_DELAYABLE_DEFINE(as5600_retry_work, as5600_retry_work_handler);
+
+static void as5600_retry_work_handler(struct k_work *work) {
+    const struct device *dev = DEVICE_DT_GET(DT_DRV_INST(0));
+    const struct zmk_input_ams_as5600_config *config = dev->config;
+    uint8_t agc = 0;
+    int err = i2c_burst_read_dt(&config->i2c_port, ZMK_INPUT_AMS_AS5600_AGC_REGISTER, &agc, sizeof(agc));
+    if (err) {
+        LOG_WRN(ZMK_INPUT_AMS_AS5600_LOG_PREFIX "Sensor not ready, retrying in 5s (err=%d)", err);
+        k_work_schedule(&as5600_retry_work, K_SECONDS(5));
+        return;
+    }
+    LOG_INF(ZMK_INPUT_AMS_AS5600_LOG_PREFIX "Sensor detected! AGC=%d", agc);
+    // You can start the polling timer here if needed
+}
+
+
+
+static int zmk_input_ams_as5600_init(const struct device *dev) {
+    const struct zmk_input_ams_as5600_config *config = dev->config;
+    struct zmk_input_ams_as5600_data *data = dev->data;
+
+    if (!device_is_ready(config->i2c_port.bus)) {
+        LOG_ERR(ZMK_INPUT_AMS_AS5600_LOG_PREFIX "I2C bus device not ready");
+        return -ENODEV;
+    }
+
+    data->dev = dev;
+    data->last_angle = 0;
+    data->last_angle_initialized = false;
+
+    LOG_INF(ZMK_INPUT_AMS_AS5600_LOG_PREFIX "Scheduling retry detection for AS5600");
+    k_work_schedule(&as5600_retry_work, K_SECONDS(2));
+
+    return 0;
+}

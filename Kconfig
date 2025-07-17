@@ -103,8 +103,19 @@ config ZMK_INPUT_AMS_AS5600_WATCHDOG_TIMER
 	bool "Enable watchdog timer to allow saving power by switching into LMP3 if the angle stays within the watchdog threshold of 4 LSB for at least one minute"
 	default n
 
+config ZMK_INPUT_AMS_AS5600_LOG_LEVEL
+    int "AS5600 log level"
+    default 4  # DEBUG
+    range 0 4
+    help
+      Set the log level for the AS5600 input module.
+
 config ZMK_INPUT_AMS_AS5600_LOG_AGC
-	bool "Print AGC value to console, to help with tuning the distance between the magnet and the sensor"
-	default n
+    bool "Print AGC value to console, to help with tuning the distance between the magnet and the sensor"
+    default n
+
+@REM config ZMK_INPUT_AMS_AS5600_LOG_AGC
+@REM 	bool "Print AGC value to console, to help with tuning the distance between the magnet and the sensor"
+@REM 	default n
 
 endif # ZMK_INPUT_AMS_AS5600
