@@ -114,8 +114,4 @@ config ZMK_INPUT_AMS_AS5600_LOG_AGC
     bool "Print AGC value to console, to help with tuning the distance between the magnet and the sensor"
     default n
 
-@REM config ZMK_INPUT_AMS_AS5600_LOG_AGC
-@REM 	bool "Print AGC value to console, to help with tuning the distance between the magnet and the sensor"
-@REM 	default n
-
 endif # ZMK_INPUT_AMS_AS5600
