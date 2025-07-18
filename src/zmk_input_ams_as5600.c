@@ -115,7 +115,8 @@ static int zmk_input_ams_as5600_process(const struct device *dev) {
 
     /* Only report input when rotation was detected */
     if (pulses) {
-        err = input_report_rel(dev, INPUT_REL_WHEEL, pulses, true, K_FOREVER);
+        // hardcoded temp
+        err = input_report_rel(dev, INPUT_REL_WHEEL, pulses / 15, true, K_FOREVER);
         if (err) {
             LOG_ERR(ZMK_INPUT_AMS_AS5600_LOG_PREFIX "Failed to report input value: %d", err);
             return err;
